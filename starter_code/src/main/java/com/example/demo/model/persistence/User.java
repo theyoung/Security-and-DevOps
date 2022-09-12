@@ -12,16 +12,25 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@JsonProperty
 	private long id;
+
+	@Column(nullable = false)
+	@JsonIgnore
+	private String password;
 	
 	@Column(nullable = false, unique = true)
 	@JsonProperty
@@ -48,14 +57,60 @@ public class User {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
-	
-	
+
+	/**
+	 * user details methods all true
+	 */
+	@JsonIgnore
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new GrantedAuthority() {
+			@Override
+			public String getAuthority() {
+				return "read";
+			}
+		});
+	}
+
+	@Override
+	public String getPassword() {
+		return this.password;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
+
 }

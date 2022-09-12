@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,12 +22,18 @@ import com.example.demo.model.requests.CreateUserRequest;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-	
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
-	private CartRepository cartRepository;
+
+	private final UserRepository userRepository;
+
+	private final CartRepository cartRepository;
+
+	private final PasswordEncoder passwordEncoder;
+
+	public UserController(UserRepository userRepository, CartRepository cartRepository, PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+		this.cartRepository = cartRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@GetMapping("/id/{id}")
 	public ResponseEntity<User> findById(@PathVariable Long id) {
@@ -40,12 +47,20 @@ public class UserController {
 	}
 	
 	@PostMapping("/create")
-	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
+	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) throws IllegalArgumentException{
 		User user = new User();
 		user.setUsername(createUserRequest.getUsername());
+
 		Cart cart = new Cart();
 		cartRepository.save(cart);
+
 		user.setCart(cart);
+
+		if(createUserRequest.getPassword().length() < 7 || !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())){
+//			return ResponseEntity.badRequest().body("User Password Must be longer than 7");
+			throw new IllegalArgumentException("User Password Must be longer than 7");
+		}
+		user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
 		userRepository.save(user);
 		return ResponseEntity.ok(user);
 	}
