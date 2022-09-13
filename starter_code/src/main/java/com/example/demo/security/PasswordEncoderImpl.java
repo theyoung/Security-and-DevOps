@@ -12,7 +12,7 @@ public class PasswordEncoderImpl implements PasswordEncoder {
     BCryptPasswordEncoder passwordEncoder;
 
     public PasswordEncoderImpl() {
-        this.passwordEncoder = new BCryptPasswordEncoder(4);
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @Override
@@ -22,6 +22,6 @@ public class PasswordEncoderImpl implements PasswordEncoder {
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return this.encode(rawPassword).equals(encodedPassword);
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }
