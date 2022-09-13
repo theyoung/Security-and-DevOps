@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 @EnableJpaRepositories("com.example.demo.model.persistence.repositories")
 @EntityScan("com.example.demo.model.persistence")
@@ -17,4 +19,10 @@ public class SareetaApplication {
 		SpringApplication.run(SareetaApplication.class, args);
 	}
 
+//	@Bean
+//	public HttpFirewall allowUrlEncodedPercentHttpFirewall() {
+//		StrictHttpFirewall firewall = new StrictHttpFirewall();
+//		firewall.setAllowUrlEncodedPercent(true);
+//		return firewall;
+//	}
 }
