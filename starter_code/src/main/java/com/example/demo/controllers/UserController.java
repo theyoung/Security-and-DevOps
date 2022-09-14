@@ -2,6 +2,8 @@ package com.example.demo.controllers;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import com.example.demo.model.requests.CreateUserRequest;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+	public static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	private final UserRepository userRepository;
 
@@ -58,10 +61,13 @@ public class UserController {
 
 		if(createUserRequest.getPassword().length() < 7 || !createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())){
 //			return ResponseEntity.badRequest().body("User Password Must be longer than 7");
+			logger.info("[CREATE USER Fail] "+user.getUsername());
 			throw new IllegalArgumentException("User Password Must be longer than 7");
 		}
 		user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
 		userRepository.save(user);
+
+		logger.info("[CREATE USER SUCCESS] "+user.getUsername());
 		return ResponseEntity.ok(user);
 	}
 	

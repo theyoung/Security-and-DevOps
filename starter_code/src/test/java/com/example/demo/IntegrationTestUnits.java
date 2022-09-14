@@ -226,6 +226,20 @@ public class IntegrationTestUnits {
 	}
 
 	@Test
+	void orderSubmitNoCartWithToken(){
+
+		//given
+		String name = "nobody";
+
+		//when
+		ResponseEntity<UserOrder> response = restTemplate.exchange("http://localhost:"+port+"/api/order/submit/"+name,HttpMethod.POST,new HttpEntity<>(this.headers), UserOrder.class);
+
+		//result
+		Assertions.assertTrue(response.getStatusCode().isError());
+
+	}
+
+	@Test
 	void orderSubmitWithToken(){
 		this.addToCartWithToken();
 
